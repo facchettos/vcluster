@@ -28,6 +28,10 @@ monitoring:
   serviceMonitor:
     enabled: false
 
+# Extra Annotations for the stateful set
+annotations: {}
+podAnnotations: {}
+
 # Plugins that should get loaded. Usually you want to apply those via 'vcluster create ... -f https://.../plugin.yaml'
 plugin: {}
 # Manually configure a plugin called test
@@ -167,19 +171,21 @@ syncer:
       memory: 64Mi
   kubeConfigContextName: "my-vcluster"
   serviceAnnotations: {}
-  # Storage settings for the vcluster
-  storage:
-    # If this is disabled, vcluster will use an emptyDir instead
-    # of a PersistentVolumeClaim
-    persistence: true
-    # Size of the persistent volume claim
-    size: 5Gi
-    # Optional StorageClass used for the pvc
-    # if empty default StorageClass defined in your host cluster will be used
-    #className:
+
+# Storage settings for the vcluster
+storage:
+  # If this is disabled, vcluster will use an emptyDir instead
+  # of a PersistentVolumeClaim
+  persistence: true
+  # Size of the persistent volume claim
+  size: 5Gi
+  # Optional StorageClass used for the pvc
+  # if empty default StorageClass defined in your host cluster will be used
+  #className:
+  autoDeletePersistentVolumeClaims: false
 
 # Virtual Cluster (k0s) configuration
-vcluster:
+api:
   # Image to use for the virtual cluster
   image: k0sproject/k0s:v1.29.1-k0s.0
   imagePullPolicy: ""
@@ -192,14 +198,6 @@ vcluster:
   # Extra arguments for k0s.
   extraArgs: []
   env: []
-  resources:
-    limits:
-      cpu: 100m
-      memory: 256Mi
-    requests:
-      cpu: 40m
-      memory: 64Mi
-  priorityClassName: ""
   # clusterDomain: cluster.local
 
 
@@ -237,9 +235,6 @@ rbac:
     excludedApiResources:
     # - pods/exec
 
-# If vCluster persistent volume claims should get deleted automatically.
-autoDeletePersistentVolumeClaims: false
-
 # NodeSelector used to schedule the vcluster
 nodeSelector: {}
 
@@ -256,9 +251,6 @@ tolerations: []
 labels: {}
 podLabels: {}
 
-# Extra Annotations for the stateful set
-annotations: {}
-podAnnotations: {}
 
 # Service configurations
 service:

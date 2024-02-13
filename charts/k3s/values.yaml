@@ -1,3 +1,6 @@
+# DefaultImageRegistry will be prepended to all deployed vcluster images, such as the vcluster pod, coredns etc.. Deployed
+# images within the vcluster will not be rewritten.
+defaultImageRegistry: ""
 # These annotations will be applied to all objects created in this chart
 globalAnnotations: {}
 
@@ -11,6 +14,11 @@ pro: false
 # secrets within the cluster.
 proLicenseSecret: ""
 
+# Embedded etcd settings
+embeddedEtcd:
+  # If embedded etcd should be enabled, this is a PRO only feature
+  enabled: false
+
 # If true, will deploy vcluster in headless mode, which means no deployment
 # or statefulset is created.
 headless: false
@@ -19,9 +27,9 @@ monitoring:
   serviceMonitor:
     enabled: false
 
-# DefaultImageRegistry will be prepended to all deployed vcluster images, such as the vcluster pod, coredns etc.. Deployed
-# images within the vcluster will not be rewritten.
-defaultImageRegistry: ""
+# Extra Annotations for the stateful set
+annotations: {}
+podAnnotations: {}
 
 # Plugins that should get loaded. Usually you want to apply those via 'vcluster create ... -f https://.../plugin.yaml'
 plugin: {}
@@ -167,19 +175,21 @@ syncer:
       memory: 256Mi
   kubeConfigContextName: "my-vcluster"
   serviceAnnotations: {}
-  # Storage settings for the vcluster
-  storage:
-    # If this is disabled, vcluster will use an emptyDir instead
-    # of a PersistentVolumeClaim
-    persistence: true
-    # Size of the persistent volume claim
-    size: 5Gi
-    # Optional StorageClass used for the pvc
-    # if empty default StorageClass defined in your host cluster will be used
-    #className:
+
+# Storage settings for the etcd or the syncer
+storage:
+  # If this is disabled, vcluster will use an emptyDir instead
+  # of a PersistentVolumeClaim
+  persistence: true
+  # Size of the persistent volume claim
+  size: 5Gi
+  # Optional StorageClass used for the pvc
+  # if empty default StorageClass defined in your host cluster will be used
+  #className:
+  autoDeletePersistentVolumeClaims: false
 
 # Virtual Cluster (k3s) configuration
-vcluster:
+api:
   # Image to use for the virtual cluster
   image: rancher/k3s:v1.29.0-k3s1
   imagePullPolicy: ""
@@ -203,18 +213,6 @@ vcluster:
   volumeMounts: []
   # Deprecated: Use syncer.env instead
   env: []
-  resources:
-    limits:
-      cpu: 100m
-      memory: 256Mi
-    requests:
-      cpu: 40m
-      memory: 64Mi
-
-# Embedded etcd settings
-embeddedEtcd:
-  # If embedded etcd should be enabled, this is a PRO only feature
-  enabled: false
 
 # list of {validating/mutating}webhooks that the syncer should proxy.
 # This is a PRO only feature.
@@ -275,10 +273,6 @@ tolerations: []
 # Extra Labels for the stateful set
 labels: {}
 podLabels: {}
-
-# Extra Annotations for the stateful set
-annotations: {}
-podAnnotations: {}
 
 # The k3s token to use. If empty will generate one automatically
 k3sToken: ""

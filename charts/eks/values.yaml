@@ -23,15 +23,15 @@ embeddedEtcd:
  # from the external etcd
  migrateFromEtcd: false
 
-# Extra Annotations for the stateful set
-annotations: {}
-podAnnotations: {}
-
 headless: false
 
 monitoring:
   serviceMonitor:
     enabled: false
+
+# Extra Annotations for the stateful set
+annotations: {}
+podAnnotations: {}
 
 # Plugins that should get loaded. Usually you want to apply those via 'vcluster create ... -f https://.../plugin.yaml'
 plugin: {}
@@ -191,16 +191,19 @@ syncer:
   securityContext: {}
   podSecurityContext: {}
   serviceAnnotations: {}
-  # Storage settings for the vcluster
-  storage:
-   # If this is disabled, vcluster will use an emptyDir instead
-   # of a PersistentVolumeClaim
-   persistence: true
-   # Size of the persistent volume claim
-   size: 5Gi
-   # Optional StorageClass used for the pvc
-   # if empty default StorageClass defined in your host cluster will be used
-   #className:
+
+# Storage settings for the etcd or the syncer
+storage:
+  # If this is disabled, vcluster will use an emptyDir instead
+  # of a PersistentVolumeClaim
+  persistence: true
+  # Size of the persistent volume claim
+  size: 5Gi
+  # Optional StorageClass used for the pvc
+  # if empty default StorageClass defined in your host cluster will be used
+  #className:
+  autoDeletePersistentVolumeClaims: false
+
 
 # Etcd settings
 etcd:
@@ -237,7 +240,6 @@ etcd:
   priorityClassName: ""
   securityContext: {}
   serviceAnnotations: {}
-  autoDeletePersistentVolumeClaims: false
 
 # Kubernetes Controller Manager settings
 controller:

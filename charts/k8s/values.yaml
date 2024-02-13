@@ -31,6 +31,10 @@ monitoring:
   serviceMonitor:
     enabled: false
 
+# Extra Annotations for the stateful set
+annotations: {}
+podAnnotations: {}
+
 # Plugins that should get loaded. Usually you want to apply those via 'vcluster create ... -f https://.../plugin.yaml'
 plugin: {}
 # Manually configure a plugin called test
@@ -42,10 +46,6 @@ plugin: {}
 #       extraRules: ...
 #     role:
 #       extraRules: ...
-
-# Extra Annotations for the stateful set
-annotations: {}
-podAnnotations: {}
 
 # Resource syncers that should be enabled/disabled.
 # Enabling syncers will impact RBAC Role and ClusterRole permissions.
@@ -153,17 +153,19 @@ proxy:
 
 # Syncer configuration
 syncer:
+  # The amount of replicas to run the deployment with
+  replicas: 1
   # Image to use for the syncer
   # image: ghcr.io/loft-sh/vcluster
   imagePullPolicy: ""
   extraArgs: []
-  volumeMounts: []
-  extraVolumeMounts: []
   env: []
   livenessProbe:
     enabled: true
   readinessProbe:
     enabled: true
+  volumeMounts: []
+  extraVolumeMounts: []
   resources:
     limits:
       ephemeral-storage: 8Gi
@@ -177,8 +179,6 @@ syncer:
       memory: 256Mi
   # Extra volumes
   volumes: []
-  # The amount of replicas to run the deployment with
-  replicas: 1
   # NodeSelector used to schedule the syncer
   nodeSelector: {}
   # Affinity to apply to the syncer deployment
@@ -208,6 +208,18 @@ syncer:
     # if empty default StorageClass defined in your host cluster will be used
     #className:
 
+# Storage settings for the etcd or the syncer
+storage:
+  # If this is disabled, vcluster will use an emptyDir instead
+  # of a PersistentVolumeClaim
+  persistence: true
+  # Size of the persistent volume claim
+  size: 5Gi
+  # Optional StorageClass used for the pvc
+  # if empty default StorageClass defined in your host cluster will be used
+  #className:
+  autoDeletePersistentVolumeClaims: false
+
 # Etcd settings
 etcd:
   image: registry.k8s.io/etcd:3.5.10-0
@@ -230,20 +242,9 @@ etcd:
     requests:
       cpu: 20m
       memory: 150Mi
-  # Storage settings for the etcd
-  storage:
-    # If this is disabled, vcluster will use an emptyDir instead
-    # of a PersistentVolumeClaim
-    persistence: true
-    # Size of the persistent volume claim
-    size: 5Gi
-    # Optional StorageClass used for the pvc
-    # if empty default StorageClass defined in your host cluster will be used
-    #className:
   priorityClassName: ""
   securityContext: {}
   serviceAnnotations: {}
-  autoDeletePersistentVolumeClaims: false
 
 # Kubernetes Controller Manager settings
 controller:

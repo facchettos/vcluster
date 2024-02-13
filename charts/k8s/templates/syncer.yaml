@@ -1,4 +1,5 @@
 {{- if not .Values.headless }}
+o
 apiVersion: apps/v1
 kind: {{ include "vcluster.kind" . }}
 metadata:
