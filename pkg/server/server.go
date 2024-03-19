@@ -18,6 +18,7 @@ import (
 	"github.com/loft-sh/vcluster/pkg/constants"
 	"github.com/loft-sh/vcluster/pkg/controllers/resources/nodes"
 	"github.com/loft-sh/vcluster/pkg/controllers/resources/nodes/nodeservice"
+	"github.com/loft-sh/vcluster/pkg/plugin"
 	"github.com/loft-sh/vcluster/pkg/server/cert"
 	"github.com/loft-sh/vcluster/pkg/server/filters"
 	"github.com/loft-sh/vcluster/pkg/server/handler"
@@ -422,6 +423,9 @@ func DefaultBuildHandlerChain(apiHandler http.Handler, c *server.Config) http.Ha
 		handler = genericapifilters.WithTracing(handler, c.TracerProvider)
 	}
 	handler = genericapifilters.WithLatencyTrackers(handler)
+
+	// this is for us to be able to intercept the plugins
+	handler = plugin.DefaultManager.WithInterceptors(handler)
 	handler = genericapifilters.WithRequestInfo(handler, c.RequestInfoResolver)
 	handler = genericapifilters.WithRequestReceivedTimestamp(handler)
 

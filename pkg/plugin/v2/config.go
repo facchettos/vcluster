@@ -13,6 +13,8 @@ type InitConfig struct {
 	Options []byte `json:"options,omitempty"`
 
 	WorkingDir string `json:"workingDir,omitempty"`
+
+	Port int `json:"port,omitempty"`
 }
 
 // InitConfigPro is used to signal the plugin if vCluster.Pro is enabled and what features are allowed
@@ -23,13 +25,28 @@ type InitConfigPro struct {
 
 // PluginConfig is the config the plugin sends back to the syncer
 type PluginConfig struct {
-	ClientHooks []*ClientHook `json:"clientHooks,omitempty"`
+	ClientHooks  []*ClientHook     `json:"clientHooks,omitempty"`
+	Interceptors InterceptorConfig `json:"InterceptorConfig,omitempty"`
+}
+
+type InterceptorConfig struct {
+	Port         int           `json:"port"`
+	Interceptors []Interceptor `json:"interceptors"`
 }
 
 type ClientHook struct {
 	APIVersion string   `json:"apiVersion,omitempty"`
 	Kind       string   `json:"kind,omitempty"`
 	Types      []string `json:"types,omitempty"`
+}
+
+type Interceptor struct {
+	APIGroups       []string `json:"apiGroups,omitempty"`
+	HandlerName     string   `json:"name,omitempty"`
+	Resources       []string `json:"resources,omitempty"`
+	ResourceNames   []string `json:"resourceNames,omitempty"`
+	NonResourceURLs []string `json:"nonResourceURLs,omitempty"`
+	Verbs           []string `json:"verbs,omitempty"`
 }
 
 func parsePluginConfig(config string) (*PluginConfig, error) {
