@@ -1374,7 +1374,8 @@ type LimitRange struct {
 
 type NetworkPolicy struct {
 	// Enabled defines if the network policy should be deployed by vCluster.
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled         bool `json:"enabled,omitempty"`
+	PlatformEnabled bool `json:"platformEnabled,omitempty"`
 
 	FallbackDNS         string              `json:"fallbackDns,omitempty"`
 	OutgoingConnections OutgoingConnections `json:"outgoingConnections,omitempty"`
